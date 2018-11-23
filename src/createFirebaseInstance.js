@@ -234,6 +234,45 @@ export const createFirebaseInstance = (firebase, configs, dispatch) => {
       })
 
   /**
+   * @description get file URL from Firebase Storage
+   * @param {String} path - File path in the Firebase Storage Bucket
+   * @return {String} File URL
+   */
+  const getFileURL = path => {
+    return storageActions
+      .getDownloadURL(dispatch, firebase, { path })
+      .then(({ url }) => {
+        return url
+      })
+  }
+
+  /**
+   * @description get file content type from Firebase Storage
+   * @param {String} path - File path in the Firebase Storage Bucket
+   * @returns {String} File ContentType
+   */
+  const getFileContentType = path => {
+    return storageActions
+      .getMetadata(dispatch, firebase, { path })
+      .then(({ metadata }) => {
+        return metadata.contentType
+      })
+  }
+
+  /**
+   * @description get file url and content type from Firebase Storage
+   * @param {String} path - FIle path in the Firebase Storage Bucket
+   * @returns {Object} result - File URL {String} and ContentType {String}
+   */
+  const getFileURLAndContentType = path => {
+    return Promise.all([getFileURL(path), getFileContentType(path)]).then(
+      result => {
+        return { url: result[0], contentType: result[1] }
+      }
+    )
+  }
+
+  /**
    * @description Upload a file to Firebase Storage with the option to store
    * its metadata in Firebase Database
    * @param {String} path - Path to location on Firebase which to set
@@ -503,6 +542,9 @@ export const createFirebaseInstance = (firebase, configs, dispatch) => {
     updateAuth,
     updateEmail,
     updateProfile,
+    getFileURL,
+    getFileContentType,
+    getFileURLAndContentType,
     uploadFile,
     uploadFiles,
     deleteFile,

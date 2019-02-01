@@ -8,9 +8,9 @@ import {
 } from '../utils/storage'
 
 const {
-  FILE_GET_DOWNLOAD_URL_START,
+  FILE_GET_DOWNLOAD_URL,
   FILE_GET_DOWNLOAD_URL_ERROR,
-  FILE_GET_METADATA_START,
+  FILE_GET_METADATA,
   FILE_GET_METADATA_ERROR,
   FILE_UPLOAD_START,
   FILE_UPLOAD_ERROR,
@@ -36,15 +36,15 @@ export const getDownloadURL = (dispatch, firebase, { path }) => {
       const payload = { ...firebase, url }
 
       dispatch({
-        type: FILE_GET_DOWNLOAD_URL_START,
+        type: FILE_GET_DOWNLOAD_URL,
         payload
       })
       return payload
     })
     .catch(error => {
-      /* eslint-disable no-console */
+      /* eslint-enable no-console */
       console.error('failed to get file path ', path, ' with error ', error)
-      /* eslint-disable no-console */
+      /* eslint-enable no-console */
       const payload = { ...firebase, path }
       dispatch({
         type: FILE_GET_DOWNLOAD_URL_ERROR,
@@ -69,15 +69,15 @@ export const getMetadata = (dispatch, firebase, { path }) => {
     .then(metadata => {
       const payload = { ...firebase, metadata }
       dispatch({
-        type: FILE_GET_METADATA_START,
+        type: FILE_GET_METADATA,
         payload
       })
       return payload
     })
     .catch(error => {
-      /* eslint-disable no-console */
+      /* eslint-enable no-console */
       console.error('error getting metadata from path ', path, ' error ', error)
-      /* eslint-disable no-console */
+      /* eslint-enable no-console */
       const payload = { ...firebase, path }
       dispatch({
         type: FILE_GET_METADATA_ERROR,
@@ -123,15 +123,15 @@ export const uploadFile = (dispatch, firebase, config) => {
   const uploadPromise = () =>
     options.progress
       ? uploadFileWithProgress(dispatch, firebase, {
-          path,
-          file,
-          filename,
-          meta
-        })
+        path,
+        file,
+        filename,
+        meta
+      })
       : firebase
-          .storage()
-          .ref(`${path}/${filename}`)
-          .put(file)
+        .storage()
+        .ref(`${path}/${filename}`)
+        .put(file)
 
   return uploadPromise()
     .then(uploadTaskSnapshot => {

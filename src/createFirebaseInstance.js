@@ -61,12 +61,12 @@ export const createFirebaseInstance = (firebase, configs, dispatch) => {
       return firebase
         .database()
         .ref(path)
-        [method](dataWithMeta, onComplete)
+      [method](dataWithMeta, onComplete)
     }
     return firebase
       .database()
       .ref(path)
-      [method](value, onComplete)
+    [method](value, onComplete)
   }
 
   /**
@@ -241,9 +241,7 @@ export const createFirebaseInstance = (firebase, configs, dispatch) => {
   const getFileURL = path => {
     return storageActions
       .getDownloadURL(dispatch, firebase, { path })
-      .then(({ url }) => {
-        return url
-      })
+      .then(({ url }) => url)
   }
 
   /**
@@ -254,9 +252,7 @@ export const createFirebaseInstance = (firebase, configs, dispatch) => {
   const getFileContentType = path => {
     return storageActions
       .getMetadata(dispatch, firebase, { path })
-      .then(({ metadata }) => {
-        return metadata.contentType
-      })
+      .then(({ metadata }) => metadata.contentType)
   }
 
   /**
@@ -265,11 +261,8 @@ export const createFirebaseInstance = (firebase, configs, dispatch) => {
    * @returns {Object} result - File URL {String} and ContentType {String}
    */
   const getFileURLAndContentType = path => {
-    return Promise.all([getFileURL(path), getFileContentType(path)]).then(
-      result => {
-        return { url: result[0], contentType: result[1] }
-      }
-    )
+    return Promise.all([getFileURL(path), getFileContentType(path)])
+      .then(result => ({ url: result[0], contentType: result[1] }))
   }
 
   /**

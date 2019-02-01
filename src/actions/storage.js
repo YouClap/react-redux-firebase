@@ -8,6 +8,10 @@ import {
 } from '../utils/storage'
 
 const {
+  FILE_GET_DOWNLOAD_URL,
+  FILE_GET_DOWNLOAD_URL_ERROR,
+  FILE_GET_METADATA,
+  FILE_GET_METADATA_ERROR,
   FILE_UPLOAD_START,
   FILE_UPLOAD_ERROR,
   FILE_UPLOAD_COMPLETE,
@@ -15,6 +19,73 @@ const {
   FILE_DELETE_ERROR,
   FILE_DELETE_COMPLETE
 } = actionTypes
+
+/**
+ * @description get file url from Firebase Storage
+ * @param {Function} dispatch - Action dispatch function
+ * @param {Object} firebase - Internal firebase object
+ * @param {String} path - path of file in Firebase Storage Bucket
+ * @returns {Object} payload
+ */
+export const getDownloadURL = (dispatch, firebase, { path }) => {
+  return firebase
+    .storage()
+    .ref(path)
+    .getDownloadURL()
+    .then(url => {
+      const payload = { ...firebase, url }
+
+      dispatch({
+        type: FILE_GET_DOWNLOAD_URL,
+        payload
+      })
+      return payload
+    })
+    .catch(error => {
+      /* eslint-enable no-console */
+      console.error('failed to get file path ', path, ' with error ', error)
+      /* eslint-enable no-console */
+      const payload = { ...firebase, path }
+      dispatch({
+        type: FILE_GET_DOWNLOAD_URL_ERROR,
+        payload
+      })
+      return payload
+    })
+}
+
+/**
+ * @description get file metadata from Firebase Storage
+ * @param {Function} dispatch - Action dispatch function
+ * @param {Object} firebase - Internal firebase object
+ * @param {String} path - path of file in Firebase Storage Bucket
+ * @returns {Object} payload
+ */
+export const getMetadata = (dispatch, firebase, { path }) => {
+  return firebase
+    .storage()
+    .ref(path)
+    .getMetadata()
+    .then(metadata => {
+      const payload = { ...firebase, metadata }
+      dispatch({
+        type: FILE_GET_METADATA,
+        payload
+      })
+      return payload
+    })
+    .catch(error => {
+      /* eslint-enable no-console */
+      console.error('error getting metadata from path ', path, ' error ', error)
+      /* eslint-enable no-console */
+      const payload = { ...firebase, path }
+      dispatch({
+        type: FILE_GET_METADATA_ERROR,
+        payload
+      })
+      return payload
+    })
+}
 
 /**
  * @description Upload file to Firebase Storage with option to store
@@ -52,15 +123,15 @@ export const uploadFile = (dispatch, firebase, config) => {
   const uploadPromise = () =>
     options.progress
       ? uploadFileWithProgress(dispatch, firebase, {
-          path,
-          file,
-          filename,
-          meta
-        })
+        path,
+        file,
+        filename,
+        meta
+      })
       : firebase
-          .storage()
-          .ref(`${path}/${filename}`)
-          .put(file)
+        .storage()
+        .ref(`${path}/${filename}`)
+        .put(file)
 
   return uploadPromise()
     .then(uploadTaskSnapshot => {
